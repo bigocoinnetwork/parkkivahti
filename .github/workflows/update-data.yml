@@ -1,0 +1,34 @@
+name: Päivitä pysäköintiaineisto
+on:
+  schedule:
+    - cron: '17 2 1,15 * *'   # klo 02.17 UTC kuun 1. ja 15. päivä
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Nouda, normalisoi ja validoi lähteet
+        run: python scripts/update.py
+      - name: Testit
+        run: node --test tests/*.test.mjs
+      - name: Tallenna (Netlify julkaisee muutoksen automaattisesti)
+        run: |
+          git config user.name "parkkivahti-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/data
+          if git diff --cached --quiet; then echo "Ei muutoksia aineistossa"; exit 0; fi
+          git commit -m "Aineiston päivitys $(date -u +%F)"
+          git push
