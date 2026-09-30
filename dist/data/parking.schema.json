@@ -1,0 +1,12 @@
+{
+ "$schema":"https://json-schema.org/draft/2020-12/schema","title":"Parkkivahti source record v1","type":"object",
+ "required":["id","sourceId","name","lat","lon","city","sourceUrl","fetchedAt","sourceUpdatedAt","verifiedOnSiteAt","fee","access","status","maxStayMinutes","openingSchedule","limitSchedule","rawRules","notes"],
+ "properties":{
+  "id":{"type":"string"},"sourceId":{"type":"string"},"name":{"type":"string"},"address":{"type":["string","null"]},"addressAccuracy":{"enum":["unknown","source","nearest-road"]},"city":{"type":["string","null"]},"municipalityCode":{"type":["string","null"]},
+  "lat":{"type":"number","minimum":-90,"maximum":90},"lon":{"type":"number","minimum":-180,"maximum":180},"sourceUrl":{"type":"string","format":"uri"},"fetchedAt":{"type":"string","format":"date-time"},"sourceUpdatedAt":{"type":["string","null"]},"verifiedOnSiteAt":{"type":["string","null"]},
+  "maxStayMinutes":{"type":["integer","null"],"minimum":0,"description":"null=unknown; 0=explicit no limit; positive=max minutes. Never infer zero from missing source value."},
+  "fee":{"enum":["free","paid","unknown"]},"access":{"enum":["public","customers","ticket","unknown"]},"status":{"enum":["active","closed","exceptional","unknown"]},
+  "openingSchedule":{"$ref":"#/$defs/schedule"},"limitSchedule":{"$ref":"#/$defs/schedule"},"unresolved":{"type":"boolean"},"rawRules":{"type":"object"},"notes":{"type":"array","items":{"type":"string"}},"conflict":{"type":"object"}
+ },
+ "$defs":{"schedule":{"type":["array","null"],"items":{"type":"object","required":["days","start","end"],"properties":{"days":{"type":"array","items":{"type":"integer","minimum":0,"maximum":6}},"start":{"type":"integer","minimum":0,"maximum":1439},"end":{"type":"integer","minimum":0,"maximum":1440}}}}}
+}
