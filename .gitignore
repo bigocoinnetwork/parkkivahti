@@ -1,0 +1,6 @@
+work/
+node_modules/
+__pycache__/
+*.pyc
+.sites-runtime/
+build/
