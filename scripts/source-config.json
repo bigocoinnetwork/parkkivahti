@@ -1,0 +1,7 @@
+{
+ "helsinki":{"url":"https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata:Pysakointipaikat_alue&outputFormat=application/json&srsName=EPSG:4326&count=100000","required":true},
+ "liipi":{"url":"https://parking.fintraffic.fi/api/v1/facilities.json?limit=-1","required":true},
+ "osm":{"endpoint":"https://overpass-api.de/api/interpreter","query":"[out:json][timeout:150];nwr[amenity=parking][fee=no](59.5,19,70.2,31.7);out center meta;","required":true},
+ "municipalities":{"url":"https://geo.stat.fi/geoserver/tilastointialueet/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=tilastointialueet:kunta1000k_2026&outputFormat=application/json&srsName=EPSG:4326","required":true},
+ "roads":{"endpoint":"https://overpass-api.de/api/interpreter","query":"[out:json][timeout:120];way[highway][name](60.12,24.80,60.27,25.08);out tags geom;","required":true}
+}
