@@ -1,0 +1,13 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {validateSubmission,scheduleFromForm,toRecord,limitText} from '../dist/contrib.js';
+const today=new Date().toISOString().slice(0,10);
+const ok={kind:'new',name:'Kirjaston parkki',address:'Kauppakatu 5',lat:61.5,lon:23.7,fee:'free',maxStayMinutes:'120',limitSchedule:[],observedOn:today};
+test('valid submission passes and is cleaned',()=>{const o=validateSubmission(ok);assert.equal(o.maxStayMinutes,120);assert.equal(o.kind,'new');});
+test('location outside Finland rejected',()=>assert.throws(()=>validateSubmission({...ok,lat:52})));
+test('links rejected (spam)',()=>assert.throws(()=>validateSubmission({...ok,note:'katso https://spam.example'})));
+test('old observation rejected',()=>assert.throws(()=>validateSubmission({...ok,observedOn:'2020-01-01'})));
+test('missing fee rejected',()=>assert.throws(()=>validateSubmission({...ok,fee:'x'})));
+test('sign rows become schedule, empty rows skipped',()=>{const s=scheduleFromForm([[[1,2,3,4,5],'8','18'],[[6],'9.30','15'],[[0],'','']]);assert.deepEqual(s,[{days:[1,2,3,4,5],start:480,end:1080},{days:[6],start:570,end:900}]);});
+test('bad time rejected',()=>assert.throws(()=>scheduleFromForm([[[1],'25','3']])));
+test('paid report becomes conflict, never free',()=>{const r=toRecord({...validateSubmission({...ok,fee:'paid'}),id:'x',reviewedAt:'2026-09-30T00:00:00Z'});assert.ok(r.conflict);});
+test('limit text',()=>assert.equal(limitText({maxStayMinutes:120,limitSchedule:[{days:[1,2,3,4,5],start:480,end:1080}]}),'2 h (ma–pe 8–18)'));
